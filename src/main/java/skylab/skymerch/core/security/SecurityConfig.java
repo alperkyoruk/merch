@@ -1,6 +1,6 @@
 package skylab.skymerch.core.security;
 
-import com.kibo.survey.business.abstracts.UserService;
+import skylab.skymerch.business.abstracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,14 +22,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthFilter jwtAuthFilter;
+    private final JwtAuthFilter jwtAuthFilter;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserService userService, PasswordEncoder passwordEncoder) {
+        this.jwtAuthFilter = jwtAuthFilter;
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -38,11 +40,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(x ->
                         x
                                 .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/surveys/getSurveyByLink").permitAll()
-                                .requestMatchers("api/ratings/addRatingList").permitAll()
-                                .requestMatchers("/api/ratings/add").permitAll()
 
-                                .anyRequest().authenticated()
+
+                                .anyRequest().permitAll()
 
                 )
                 .sessionManagement(x -> x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
