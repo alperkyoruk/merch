@@ -44,7 +44,7 @@ public class Product {
     private Date updatedAt;
 
     @Column(name = "is_discounted")
-    private boolean isDiscounted;
+    private boolean discounted;
 
     @Column(name = "discount_rate")
     private float discountRate;
@@ -56,5 +56,10 @@ public class Product {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     private List<Vendor> vendors;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH, targetEntity = Order.class)
+    @JoinColumn(name = "order_id")
+    private Order order;
 
 }

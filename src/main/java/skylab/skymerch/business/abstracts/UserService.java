@@ -1,6 +1,6 @@
 package skylab.skymerch.business.abstracts;
 
-import org.springframework.security.core.userdetails.User;
+import skylab.skymerch.entities.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import skylab.skymerch.core.utilities.result.DataResult;
 import skylab.skymerch.core.utilities.result.Result;

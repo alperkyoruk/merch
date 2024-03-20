@@ -10,8 +10,8 @@ public interface ProductDao extends JpaRepository<Product, Integer> {
     Product findByStock(int stock);
     Product findByDescription(String description);
     Product findByImage(String image);
-    Product findByCategory(int category);
-    Product findByDiscountedIs(boolean discounted);
+    Product findAllByCategoryId(int categoryId);
+    Product findByDiscounted(boolean discounted);
 
 
 }

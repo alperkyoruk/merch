@@ -19,6 +19,9 @@ public class Vendor {
     @Column(name = "id")
     private int id;
 
+    @Column(name = "vendor_name")
+    private String vendorName;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

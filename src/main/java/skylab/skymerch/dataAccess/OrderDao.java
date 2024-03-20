@@ -8,6 +8,6 @@ import java.util.Date;
 public interface OrderDao extends JpaRepository<Order, Integer>{
     Order findById(int id);
     Order findByOrderNumber(String orderNumber);
-    Order findByOrderStatus(String orderStatus);
+    Order findByStatus(String status);
     Order findByCreatedAt(Date createdAt);
 }

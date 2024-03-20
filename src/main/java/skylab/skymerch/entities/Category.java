@@ -28,6 +28,6 @@ public class Category {
     private List<Product> product;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER ,cascade = CascadeType.ALL)
-    private List<SubCategory> subCategory;
+    private List<Subcategory> subCategory;
 
 }

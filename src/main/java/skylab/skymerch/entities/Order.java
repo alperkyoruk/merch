@@ -32,6 +32,9 @@ public class Order {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "order_number")
+    private String orderNumber;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -48,7 +51,7 @@ public class Order {
     private Payment payment;
 
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER ,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Product> products;
 
 

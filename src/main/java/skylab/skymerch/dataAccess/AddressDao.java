@@ -8,6 +8,6 @@ public interface AddressDao extends JpaRepository<Address, Integer>{
     Address findByStreet(String street);
     Address findByCity(String city);
     Address findByState(String state);
-    Address findByZip(String zip);
+    Address findByZipCode(String zipCode);
     Address findByCountry(String country);
 }
