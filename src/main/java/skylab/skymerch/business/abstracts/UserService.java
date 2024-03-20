@@ -1,5 +1,6 @@
 package skylab.skymerch.business.abstracts;
 
+import skylab.skymerch.entities.Dtos.RequestUserDto;
 import skylab.skymerch.entities.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import skylab.skymerch.core.utilities.result.DataResult;
@@ -12,7 +13,7 @@ public interface UserService extends UserDetailsService {
 
     Result deleteUser(int userId);
 
-    Result updateUser(User user);
+    Result updateUser(RequestUserDto requestUserDto);
 
     DataResult<User> getUserById(int userId);
 
@@ -20,7 +21,7 @@ public interface UserService extends UserDetailsService {
 
     DataResult<List<User>> getUsers();
 
-    DataResult<List<User>> getUsersByRole(String role);
+    //DataResult<List<User>> getUsersByRole(String role);
 
 
 }

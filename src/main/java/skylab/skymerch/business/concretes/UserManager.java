@@ -1,7 +1,8 @@
 package skylab.skymerch.business.concretes;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import skylab.skymerch.core.utilities.result.SuccessResult;
+import skylab.skymerch.core.utilities.result.*;
+import skylab.skymerch.entities.Dtos.RequestUserDto;
 import skylab.skymerch.entities.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,9 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.UserService;
 import skylab.skymerch.business.constants.UserMessages;
-import skylab.skymerch.core.utilities.result.DataResult;
-import skylab.skymerch.core.utilities.result.ErrorResult;
-import skylab.skymerch.core.utilities.result.Result;
 import skylab.skymerch.dataAccess.UserDao;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import skylab.skymerch.entities.Role;
@@ -65,36 +63,78 @@ public class UserManager implements UserService {
 
     @Override
     public Result deleteUser(int userId) {
-        return null;
+        var result = getUserById(userId);
+        if(!result.isSuccess()){
+            return new ErrorResult(UserMessages.UserNotFound);
+        }
+
+        var user = result.getData();
+        userDao.delete(user);
+
+        return new SuccessResult(UserMessages.userDeleted);
     }
 
     @Override
-    public Result updateUser(User user) {
-        return null;
+    public Result updateUser(RequestUserDto user) {
+        var result = getUserByUsername(user.getUsername());
+        if(!result.isSuccess()){
+            return new ErrorResult(UserMessages.UserNotFound);
+        }
+
+        var userToUpdate = result.getData();
+        userToUpdate.setUsername(user.getUsername());
+        userToUpdate.setPassword(passwordEncoder.encode(user.getPassword()));
+        userToUpdate.setPhone(user.getPhone());
+        userDao.save(userToUpdate);
+
+
+        return new SuccessResult(UserMessages.userUpdated);
     }
 
     @Override
     public DataResult<User> getUserById(int userId) {
-        return null;
+        var result = userDao.findById(userId);
+        if(result == null){
+            return new SuccessDataResult<>(UserMessages.UserNotFound);
+        }
+
+        return new SuccessDataResult<>(result, UserMessages.UserFound);
     }
 
     @Override
     public DataResult<User> getUserByUsername(String username) {
-        return null;
+        var result = userDao.findByUsername(username);
+        if(result == null){
+            return new SuccessDataResult<>(UserMessages.UserNotFound);
+        }
+
+        return new SuccessDataResult<>(result, UserMessages.UserFound);
     }
 
     @Override
     public DataResult<List<User>> getUsers() {
-        return null;
+        var result = userDao.findAll();
+        if(result.isEmpty()){
+            return new ErrorDataResult<>(UserMessages.UserNotFound);
+        }
+
+        return new SuccessDataResult<List<User>>(result, UserMessages.UsersFetchSuccess);
     }
 
-    @Override
-    public DataResult<List<User>> getUsersByRole(String role) {
-        return null;
-    }
+ //   @Override
+ //   public DataResult<List<User>> getUsersByRole(String role) {
+ //       var result = userDao.findAllByAuthorities(role);
+ //       if(result == null){
+ //           return new ErrorDataResult<>(UserMessages.UserNotFound);
+ //       }
+
+
+ //       return new SuccessDataResult<List<User>>(result, UserMessages.UsersFetchSuccess);
+ //   }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+        var user = getUserByUsername(username).getData();
+        return user;
     }
 }

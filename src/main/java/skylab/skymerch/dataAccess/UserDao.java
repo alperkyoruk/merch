@@ -1,6 +1,7 @@
 package skylab.skymerch.dataAccess;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import skylab.skymerch.entities.Role;
 import skylab.skymerch.entities.User;
 
 
@@ -13,4 +14,6 @@ public interface UserDao extends JpaRepository<User, Integer> {
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
+
+    User findAllByAuthorities(String role);
 }
