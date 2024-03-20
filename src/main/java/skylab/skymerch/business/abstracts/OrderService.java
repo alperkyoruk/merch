@@ -2,6 +2,7 @@ package skylab.skymerch.business.abstracts;
 
 import skylab.skymerch.core.utilities.result.DataResult;
 import skylab.skymerch.core.utilities.result.Result;
+import skylab.skymerch.entities.Dtos.RequestOrderDto;
 import skylab.skymerch.entities.Order;
 
 import java.util.List;
@@ -11,11 +12,11 @@ public interface OrderService {
 
     Result deleteOrder(int orderId);
 
-    Result updateOrder(Order order);
+    Result updateOrder(RequestOrderDto requestOrderDto);
 
-    Result changeOrderStatus(int orderId, String status);
+  //  Result changeOrderStatus(int orderId, String status);
 
-    Result changeOrderAddress(int orderId, int addressId);
+  //  Result changeOrderAddress(int orderId, int addressId);
 
     DataResult<Order> getById(int orderId);
 
