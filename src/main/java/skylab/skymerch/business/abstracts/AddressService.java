@@ -3,6 +3,9 @@ package skylab.skymerch.business.abstracts;
 import skylab.skymerch.core.utilities.result.DataResult;
 import skylab.skymerch.core.utilities.result.Result;
 import skylab.skymerch.entities.Address;
+import skylab.skymerch.entities.Dtos.RequestAddressDto;
+
+import java.util.List;
 
 public interface AddressService {
 
@@ -12,8 +15,8 @@ public interface AddressService {
 
     Result deleteAddress(int addressId);
 
-    Result updateAddress(Address address);
+    Result updateAddress(RequestAddressDto requestAddressDto);
 
-    DataResult<Address> getByUserId(int userId);
+    DataResult <List<Address>> getByUserId(int userId);
 
 }
