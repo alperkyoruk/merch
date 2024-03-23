@@ -62,4 +62,7 @@ public class Product {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
+    private List<Rating> ratings;
+
 }

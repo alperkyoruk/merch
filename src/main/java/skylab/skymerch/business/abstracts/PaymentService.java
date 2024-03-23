@@ -2,6 +2,7 @@ package skylab.skymerch.business.abstracts;
 
 import skylab.skymerch.core.utilities.result.DataResult;
 import skylab.skymerch.core.utilities.result.Result;
+import skylab.skymerch.entities.Dtos.RequestPaymentDto;
 import skylab.skymerch.entities.Payment;
 
 import java.util.List;
@@ -11,9 +12,7 @@ public interface PaymentService {
 
     Result deletePayment(int paymentId);
 
-    Result updatePayment(Payment payment);
-
-    Result makePayment(Payment payment);
+    Result updatePayment(RequestPaymentDto requestPaymentDto);
 
     DataResult<Payment> getById(int paymentId);
 
