@@ -1,5 +1,6 @@
 package skylab.skymerch.business.concretes;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.CategoryService;
 import skylab.skymerch.business.abstracts.ProductService;
@@ -16,16 +17,17 @@ import java.util.List;
 @Service
 public class ProductManager implements ProductService {
 
+    @Autowired
     private ProductDao productDao;
     private VendorService vendorService;
     private CategoryService categoryService;
     private RatingService ratingService;
 
 
-    public ProductManager(ProductDao productDao) {
+    public ProductManager(ProductDao productDao, VendorService vendorService, CategoryService categoryService, RatingService ratingService) {
         this.productDao = productDao;
-        this.categoryService = categoryService;
         this.vendorService = vendorService;
+        this.categoryService = categoryService;
         this.ratingService = ratingService;
     }
 

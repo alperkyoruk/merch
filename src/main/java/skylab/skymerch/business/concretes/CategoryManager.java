@@ -22,8 +22,9 @@ public class CategoryManager implements CategoryService {
     @Override
     public Result addCategory(Category category) {
        if(category.getName().isEmpty()){
-           return null;
+           return new ErrorResult(CategoryMessages.CategoryCannotBeNull);
        }
+
 
        categoryDao.save(category);
 

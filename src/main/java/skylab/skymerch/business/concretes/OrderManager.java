@@ -2,8 +2,10 @@ package skylab.skymerch.business.concretes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import skylab.skymerch.business.abstracts.AddressService;
 import skylab.skymerch.business.abstracts.OrderService;
 import skylab.skymerch.business.abstracts.PaymentService;
+import skylab.skymerch.business.abstracts.ProductService;
 import skylab.skymerch.business.constants.OrderMessages;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.dataAccess.OrderDao;
@@ -25,9 +27,15 @@ public class OrderManager implements OrderService {
 
     private PaymentService paymentService;
 
-    public OrderManager(OrderDao orderDao) {
+    private AddressService addressService;
+
+    private ProductService productService;
+
+    public OrderManager(OrderDao orderDao, PaymentService paymentService, AddressService addressService, ProductService productService) {
         this.orderDao = orderDao;
         this.paymentService = paymentService;
+        this.addressService = addressService;
+        this.productService = productService;
     }
 
     @Override
@@ -53,45 +61,34 @@ public class OrderManager implements OrderService {
     }
 
     @Override
-    public Result updateOrder(RequestOrderDto order) {
-        var result = getById(order.getId());
+    public Result updateOrder(RequestOrderDto requestOrderDto) {
+        var result = getById(requestOrderDto.getId());
         if(!result.isSuccess()) {
             return new ErrorResult(OrderMessages.orderCannotBeFound);
         }
 
-        var orderToUpdate = result.getData();
-        orderToUpdate.setAddress(order.getAddress());
-        orderToUpdate.setStatus(order.getStatus());
-        orderToUpdate.setTotalPrice(order.getTotalPrice());
+        var addressResponse = addressService.getById(requestOrderDto.getAddressId()).getData();
+        if(addressResponse == null){
+            return new ErrorResult(OrderMessages.addressCannotBeFound);
+        }
 
 
-        orderDao.save(orderToUpdate);
+        var order = Order.builder()
+                .id(requestOrderDto.getId())
+                .address(addressResponse)
+                .orderNumber(requestOrderDto.getOrderNumber())
+                .status(requestOrderDto.getStatus())
+                .build();
+
+        orderDao.save(order);
         return new SuccessResult(OrderMessages.orderUpdated);
     }
-
- //  @Override
- //  public Result changeOrderStatus(int orderId, String status) {
- //      var result = getById(orderId);
- //      if(!result.isSuccess()) {
- //          return new ErrorResult(OrderMessages.orderCannotBeFound);
- //      }
- //
- //      var order = result.getData();
- //      order.setStatus(status);
- //      orderDao.save(order);
- //      return new SuccessResult(OrderMessages.orderStatusChanged);
- //  }
-
- //   @Override
- //   public Result changeOrderAddress(int orderId, int addressId) {
- //       return null;
- //   }
 
     @Override
     public DataResult<Order> getById(int orderId) {
         var result = orderDao.findById(orderId);
         if(result == null){
-            return new ErrorDataResult(OrderMessages.orderCannotBeFound);
+            return new ErrorDataResult<>(OrderMessages.orderCannotBeFound);
         }
 
         return new SuccessDataResult<>(result, OrderMessages.getOrderByIdSuccess);

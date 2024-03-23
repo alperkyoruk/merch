@@ -12,4 +12,5 @@ public class CategoryMessages {
     public static String categoryDeleted = "Category deleted";
     public static String getCategoriesSuccess = "Categories fetched";
     public static String getCategoriesEmpty = "Categories are empty";
+    public static String CategoryCannotBeNull;
 }

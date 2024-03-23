@@ -20,6 +20,7 @@ public class RequestOrderDto {
     private int paymentId;
 
     private Address address;
+    private String orderNumber;
 
 
 }

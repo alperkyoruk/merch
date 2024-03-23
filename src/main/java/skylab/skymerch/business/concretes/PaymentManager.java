@@ -10,6 +10,7 @@ import skylab.skymerch.dataAccess.PaymentDao;
 import skylab.skymerch.entities.Dtos.RequestPaymentDto;
 import skylab.skymerch.entities.Payment;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -38,6 +39,7 @@ public class PaymentManager implements PaymentService {
         if(payment.getOrder().getTotalPrice() == payment.getAmount())
             payment.setStatus("PAID");
 
+        payment.setTimePaid(new Date());
         paymentDao.save(payment);
         return new SuccessResult(PaymentMessages.PaymentAdded);
     }

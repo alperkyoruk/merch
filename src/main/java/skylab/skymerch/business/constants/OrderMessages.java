@@ -17,4 +17,5 @@ public class OrderMessages {
     public static String getOrdersByStatusSuccess = "Orders fetched";
     public static String paymentAmountNotEqual = "Payment amount is not equal to order total price";
     public static String orderPaymentConfirmed = "Order payment confirmed";
+    public static String addressCannotBeFound = "Address cannot be found";
 }
