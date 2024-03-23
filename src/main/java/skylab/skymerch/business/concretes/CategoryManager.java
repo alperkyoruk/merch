@@ -74,8 +74,8 @@ public class CategoryManager implements CategoryService {
     }
 
     @Override
-    public DataResult<List<Category>> getProductCategories(int productId) {
-        var result = categoryDao.findAllByProductId(productId);
+    public DataResult<Category> getProductCategory(int productId) {
+        var result = categoryDao.findByProductId(productId);
         if(result == null){
             return new ErrorDataResult<>(CategoryMessages.getCategoriesEmpty);
         }

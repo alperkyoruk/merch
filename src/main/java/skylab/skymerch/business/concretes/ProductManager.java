@@ -1,87 +1,220 @@
 package skylab.skymerch.business.concretes;
 
 import org.springframework.stereotype.Service;
+import skylab.skymerch.business.abstracts.CategoryService;
 import skylab.skymerch.business.abstracts.ProductService;
-import skylab.skymerch.core.utilities.result.DataResult;
-import skylab.skymerch.core.utilities.result.Result;
+import skylab.skymerch.business.abstracts.RatingService;
+import skylab.skymerch.business.abstracts.VendorService;
+import skylab.skymerch.business.constants.ProductMessages;
+import skylab.skymerch.core.utilities.result.*;
+import skylab.skymerch.dataAccess.ProductDao;
+import skylab.skymerch.entities.Dtos.RequestProductDto;
 import skylab.skymerch.entities.Product;
 
 import java.util.List;
 
 @Service
 public class ProductManager implements ProductService {
+
+    private ProductDao productDao;
+    private VendorService vendorService;
+    private CategoryService categoryService;
+    private RatingService ratingService;
+
+
+    public ProductManager(ProductDao productDao) {
+        this.productDao = productDao;
+        this.categoryService = categoryService;
+        this.vendorService = vendorService;
+        this.ratingService = ratingService;
+    }
+
+
     @Override
-    public Result addProduct(Product product) {
-        return null;
+    public Result addProduct(RequestProductDto requestProductDto) {
+        if (requestProductDto.getName() == null ||
+                requestProductDto.getCategoryId() == 0 ||
+                requestProductDto.getVendorId() == 0 ||
+                requestProductDto.getPrice() == 0 ||
+                requestProductDto.getStock() == 0){
+            return new ErrorResult(ProductMessages.ProductCannotBeNull);
+    }
+
+        var vendorsResponse = vendorService.getVendorsByProductId(requestProductDto.getVendorId()).getData();
+        if(vendorsResponse == null){
+            return new ErrorResult(ProductMessages.VendorCannotBeFound);
+        }
+        var categoryResponse = categoryService.getProductCategory(requestProductDto.getId()).getData();
+        if(categoryResponse == null){
+            return new ErrorResult(ProductMessages.CategoryCannotBeFound);
+        }
+
+        var ratingsResponse = ratingService.getRatingsByProductId(requestProductDto.getId()).getData();
+        if(ratingsResponse == null){
+            return new ErrorResult(ProductMessages.RatingCannotBeFound);
+        }
+
+        Product product =  Product.builder()
+                .name(requestProductDto.getName())
+                .category(categoryResponse)
+                .vendors(vendorsResponse)
+                .price(requestProductDto.getPrice())
+                .stock(requestProductDto.getStock())
+                .ratings(ratingsResponse)
+                .build();
+
+        productDao.save(product);
+
+        return new SuccessResult(ProductMessages.ProductAdded);
     }
 
     @Override
     public Result deleteProduct(int productId) {
-        return null;
+        var result = getById(productId);
+        if(!result.isSuccess()) {
+            return new ErrorResult(ProductMessages.ProductCannotBeFound);
+        }
+
+        var product = result.getData();
+        productDao.delete(product);
+        return new SuccessResult(ProductMessages.ProductDeleted);
     }
 
     @Override
-    public Result updateProduct(Product product) {
-        return null;
+    public Result updateProduct(RequestProductDto requestProductDto) {
+        var result = productDao.findById(requestProductDto.getId());
+        if(result == null){
+            return new ErrorResult(ProductMessages.ProductCannotBeFound);
+        }
+
+        var vendorsResponse = vendorService.getVendorsByProductId(requestProductDto.getVendorId()).getData();
+        if(vendorsResponse == null){
+            return new ErrorResult(ProductMessages.VendorCannotBeFound);
+        }
+
+        var categoryResponse = categoryService.getProductCategory(requestProductDto.getId()).getData();
+        if(categoryResponse == null){
+            return new ErrorResult(ProductMessages.CategoryCannotBeFound);
+        }
+
+        var ratingsResponse = ratingService.getRatingsByProductId(requestProductDto.getId()).getData();
+        if(ratingsResponse == null){
+            return new ErrorResult(ProductMessages.RatingCannotBeFound);
+        }
+
+
+        var product = Product.builder()
+                .id(requestProductDto.getId())
+                .name(requestProductDto.getName())
+                .category(categoryResponse)
+                .vendors(vendorsResponse)
+                .price(requestProductDto.getPrice())
+                .stock(requestProductDto.getStock())
+                .ratings(ratingsResponse)
+                .build();
+
+        productDao.save(product);
+
+        return new SuccessResult(ProductMessages.ProductUpdated);
     }
 
-    @Override
-    public Result changeProductStock(int productId, int stock) {
-        return null;
-    }
-
-    @Override
-    public Result changeProductPrice(int productId, float price) {
-        return null;
-    }
 
     @Override
     public DataResult<Product> getById(int productId) {
-        return null;
+        var result = productDao.findById(productId);
+        if(result == null){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductByIdSuccess);
     }
 
     @Override
     public DataResult<List<Product>> getProducts() {
-        return null;
+    var result = productDao.findAll();
+    if(result.isEmpty()){
+        return new ErrorDataResult<>(ProductMessages.getProductsEmpty);
+    }
+        return new SuccessDataResult<>(result, ProductMessages.getProductsSuccess);
     }
 
     @Override
     public DataResult<List<Product>> getProductsByName(String productName) {
-        return null;
+        var result = productDao.findByName(productName);
+        if(result == null){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductsByNameSuccess);
     }
 
     @Override
     public DataResult<List<Product>> getProductsByCategory(int categoryId) {
-        return null;
+        var result = productDao.findAllByCategoryId(categoryId);
+        if(result == null){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductsByCategorySuccess);
     }
 
     @Override
     public DataResult<List<Product>> getProductsByPrice(float minPrice, float maxPrice) {
-        return null;
+        var result = productDao.findAllByPriceBetween(minPrice, maxPrice);
+        if(result == null){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductsByPriceSuccess);
     }
 
     @Override
     public DataResult<List<Product>> getProductsByStock(int minStock, int maxStock) {
-        return null;
+        var result = productDao.findAllByStockBetween(minStock, maxStock);
+        if(result == null){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductsByStockSuccess);
     }
 
     @Override
     public DataResult<List<Product>> getDiscountedProducts() {
-        return null;
+        var result = productDao.findAllByDiscounted(true);
+        if(result == null){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductsSuccess);
     }
 
     @Override
     public DataResult<List<Product>> getProductsByVendor(int vendorId) {
-        return null;
+        var result = productDao.findAllByVendors(vendorId);
+        if(result == null){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductsSuccess);
     }
 
     @Override
     public DataResult<List<Product>> getSortedProductsByPrice() {
-        return null;
+        var result = productDao.findAllByOrderByPriceAsc();
+        if(result == null){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductsByPriceSuccess);
     }
 
     @Override
-    public DataResult<List<Product>> getSortedProductsByRating(int rating) {
-        return null;
+    public DataResult<List<Product>> getSortedProductsByRating() {
+        var result = productDao.findAllByOrderByRatingsDesc();
+        if(result == null){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductsByRatingSuccess);
     }
 }

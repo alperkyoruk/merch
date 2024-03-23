@@ -9,7 +9,7 @@ public interface CategoryDao extends JpaRepository<Category, Integer>{
     Category findById(int id);
     Category findByName(String Name);
 
-    List<Category> findAllByProductId(int productId);
+    Category findByProductId(int productId);
 
 
 }

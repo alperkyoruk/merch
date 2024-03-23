@@ -3,15 +3,24 @@ package skylab.skymerch.dataAccess;
 import org.springframework.data.jpa.repository.JpaRepository;
 import skylab.skymerch.entities.Product;
 
+import java.util.List;
+
 public interface ProductDao extends JpaRepository<Product, Integer> {
     Product findById(int id);
-    Product findByName(String name);
-    Product findByPrice(float price);
-    Product findByStock(int stock);
-    Product findByDescription(String description);
-    Product findByImage(String image);
-    Product findAllByCategoryId(int categoryId);
-    Product findByDiscounted(boolean discounted);
+    List<Product> findByName(String name);
+    List<Product> findByPrice(float price);
+    List<Product> findByStock(int stock);
+    List<Product> findByDescription(String description);
+    List<Product> findByImage(String image);
+    List<Product> findAllByCategoryId(int categoryId);
+    List<Product> findAllByDiscounted(boolean discounted);
+    List<Product> findAllByPriceBetween(float min, float max);
+    List<Product> findAllByStockBetween(int min, int max);
+    List<Product> findAllByRating(int rating);
+    List<Product> findAllByVendors(int vendorId);
+    List<Product> findAllByOrderByPriceAsc();
+    List<Product> findAllByOrderByRatingsDesc();
+
 
 
 }

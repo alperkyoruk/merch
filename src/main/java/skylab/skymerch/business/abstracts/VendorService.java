@@ -15,5 +15,7 @@ public interface VendorService {
     DataResult<Vendor> getVendorByUserId(int userId);
     DataResult<List<Vendor>> getVendors();
 
+    DataResult<List<Vendor>> getVendorsByProductId(int productId);
+
 
 }

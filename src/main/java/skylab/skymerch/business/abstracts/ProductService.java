@@ -2,21 +2,18 @@ package skylab.skymerch.business.abstracts;
 
 import skylab.skymerch.core.utilities.result.DataResult;
 import skylab.skymerch.core.utilities.result.Result;
+import skylab.skymerch.entities.Dtos.RequestProductDto;
 import skylab.skymerch.entities.Product;
 
 import java.util.List;
 
 public interface ProductService {
 
-    Result addProduct(Product product);
+    Result addProduct(RequestProductDto requestProductDto);
 
     Result deleteProduct(int productId);
 
-    Result updateProduct(Product product);
-
-    Result changeProductStock(int productId, int stock);
-
-    Result changeProductPrice(int productId, float price);
+    Result updateProduct(RequestProductDto requestProductDto);
 
     DataResult<Product> getById(int productId);
 
@@ -36,7 +33,7 @@ public interface ProductService {
 
     DataResult<List<Product>> getSortedProductsByPrice();
 
-    DataResult<List<Product>> getSortedProductsByRating(int rating);
+    DataResult<List<Product>> getSortedProductsByRating();
 
 
 

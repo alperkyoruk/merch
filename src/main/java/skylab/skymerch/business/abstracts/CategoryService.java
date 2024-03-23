@@ -18,7 +18,7 @@ public interface CategoryService {
 
     DataResult<List<Category>> getCategories();
 
-    DataResult<List<Category>> getProductCategories(int productId);
+    DataResult<Category> getProductCategory(int productId);
 
 
 
