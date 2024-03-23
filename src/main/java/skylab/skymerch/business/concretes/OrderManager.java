@@ -23,7 +23,7 @@ public class OrderManager implements OrderService {
     @Autowired
     private OrderDao orderDao;
 
-    private PaymentService paymentService
+    private PaymentService paymentService;
 
     public OrderManager(OrderDao orderDao) {
         this.orderDao = orderDao;
