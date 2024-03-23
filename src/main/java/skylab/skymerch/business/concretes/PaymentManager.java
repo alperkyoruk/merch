@@ -1,6 +1,7 @@
 package skylab.skymerch.business.concretes;
 
 import org.springframework.stereotype.Service;
+import skylab.skymerch.business.abstracts.OrderService;
 import skylab.skymerch.business.abstracts.PaymentService;
 import skylab.skymerch.business.constants.PaymentMessages;
 import skylab.skymerch.core.utilities.result.*;
@@ -16,12 +17,14 @@ public class PaymentManager implements PaymentService {
 
     private PaymentDao paymentDao;
 
-    private OrderDao orderDao;
 
-    public PaymentManager(PaymentDao paymentDao) {
+    private OrderService orderService;
+
+    public PaymentManager(PaymentDao paymentDao, OrderService orderService) {
         this.paymentDao = paymentDao;
-        this.orderDao = orderDao;
+        this.orderService = orderService;
     }
+
 
 
 
@@ -54,7 +57,7 @@ public class PaymentManager implements PaymentService {
 
     @Override
     public Result updatePayment(RequestPaymentDto requestPaymentDto) {
-        var order = orderDao.findById(requestPaymentDto.getOrderId());
+        var order = orderService.getById(requestPaymentDto.getOrderId()).getData();
         Payment payment = Payment.builder().
                 id(requestPaymentDto.getId()).
                 order(order).

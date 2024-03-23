@@ -3,6 +3,7 @@ package skylab.skymerch.business.concretes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.OrderService;
+import skylab.skymerch.business.abstracts.PaymentService;
 import skylab.skymerch.business.constants.OrderMessages;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.dataAccess.OrderDao;
@@ -22,11 +23,11 @@ public class OrderManager implements OrderService {
     @Autowired
     private OrderDao orderDao;
 
-    private PaymentDao paymentDao;
+    private PaymentService paymentService
 
     public OrderManager(OrderDao orderDao) {
         this.orderDao = orderDao;
-        this.paymentDao = paymentDao;
+        this.paymentService = paymentService;
     }
 
     @Override
@@ -135,7 +136,7 @@ public class OrderManager implements OrderService {
 
 
         var order = result.getData();
-        if(paymentDao.findById(orderId).getAmount() != order.getTotalPrice()){
+        if(paymentService.getByOrderId(order.getId()).getData().getAmount() != order.getTotalPrice()){
             return new ErrorResult(OrderMessages.paymentAmountNotEqual);
 
         }
