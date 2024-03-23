@@ -6,6 +6,7 @@ import skylab.skymerch.business.abstracts.OrderService;
 import skylab.skymerch.business.constants.OrderMessages;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.dataAccess.OrderDao;
+import skylab.skymerch.dataAccess.PaymentDao;
 import skylab.skymerch.entities.Dtos.RequestOrderDto;
 import skylab.skymerch.entities.Order;
 
@@ -17,11 +18,15 @@ import java.util.List;
 @Service
 public class OrderManager implements OrderService {
 
+
     @Autowired
     private OrderDao orderDao;
 
+    private PaymentDao paymentDao;
+
     public OrderManager(OrderDao orderDao) {
         this.orderDao = orderDao;
+        this.paymentDao = paymentDao;
     }
 
     @Override
@@ -119,6 +124,25 @@ public class OrderManager implements OrderService {
         }
 
         return new SuccessDataResult<>(result, OrderMessages.getOrdersByStatusSuccess);
+    }
+
+    @Override
+    public Result confirmPayment(int orderId) {
+        var result = getById(orderId);
+        if(!result.isSuccess()) {
+            return new ErrorResult(OrderMessages.orderCannotBeFound);
+        }
+
+
+        var order = result.getData();
+        if(paymentDao.findById(orderId).getAmount() != order.getTotalPrice()){
+            return new ErrorResult(OrderMessages.paymentAmountNotEqual);
+
+        }
+
+        order.setStatus("PAID");
+        orderDao.save(order);
+        return new SuccessResult(OrderMessages.orderPaymentConfirmed);
     }
 
 

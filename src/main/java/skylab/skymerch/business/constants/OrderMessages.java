@@ -15,4 +15,6 @@ public class OrderMessages {
     public static String getOrdersEmpty = "Orders are empty";
     public static String getOrdersSuccess = "Orders fetched";
     public static String getOrdersByStatusSuccess = "Orders fetched";
+    public static String paymentAmountNotEqual = "Payment amount is not equal to order total price";
+    public static String orderPaymentConfirmed = "Order payment confirmed";
 }

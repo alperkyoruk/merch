@@ -17,6 +17,7 @@ public interface OrderService {
   //  Result changeOrderStatus(int orderId, String status);
 
   //  Result changeOrderAddress(int orderId, int addressId);
+    Result confirmPayment(int orderId);
 
     DataResult<Order> getById(int orderId);
 

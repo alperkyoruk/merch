@@ -32,6 +32,9 @@ public class PaymentManager implements PaymentService {
             return new ErrorResult(PaymentMessages.PaymentCannotBeNull);
         }
 
+        if(payment.getOrder().getTotalPrice() == payment.getAmount())
+            payment.setStatus("PAID");
+
         paymentDao.save(payment);
         return new SuccessResult(PaymentMessages.PaymentAdded);
     }
