@@ -17,6 +17,7 @@ import java.util.List;
 @Service
 public class ProductManager implements ProductService {
 
+
     @Autowired
     private ProductDao productDao;
     private VendorService vendorService;
@@ -142,7 +143,7 @@ public class ProductManager implements ProductService {
 
     @Override
     public DataResult<List<Product>> getProductsByName(String productName) {
-        var result = productDao.findByName(productName);
+        var result = productDao.findAllByName(productName);
         if(result == null){
             return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
         }
@@ -219,4 +220,26 @@ public class ProductManager implements ProductService {
 
         return new SuccessDataResult<>(result, ProductMessages.getProductsByRatingSuccess);
     }
+
+    @Override
+    public DataResult<List<Product>> getProductsBySubcategory(int subcategoryId) {
+        var result = productDao.findAllByCategorySubCategory(subcategoryId);
+        if(result.isEmpty()){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductsBySubcategorySuccess);
+    }
+
+    @Override
+    public DataResult<List<Product>> getProductsByNameContains(String productName) {
+        var result = productDao.findAllByNameContainsIgnoreCase(productName);
+        if(result.isEmpty()){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, ProductMessages.getProductsByNameSuccess);
+    }
+
 }

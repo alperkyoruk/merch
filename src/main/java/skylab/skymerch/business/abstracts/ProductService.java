@@ -35,6 +35,11 @@ public interface ProductService {
 
     DataResult<List<Product>> getSortedProductsByRating();
 
+    DataResult<List<Product>> getProductsBySubcategory(int subcategoryId);
+
+    DataResult<List<Product>> getProductsByNameContains(String productName);
+
+
 
 
 

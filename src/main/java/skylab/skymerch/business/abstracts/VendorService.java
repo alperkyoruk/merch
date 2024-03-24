@@ -7,7 +7,7 @@ import skylab.skymerch.entities.Vendor;
 import java.util.List;
 
 public interface VendorService {
-    Result addVendor(int userId);
+    Result addVendor(Vendor vendor);
     Result deleteVendor(int vendorId);
     Result updateVendor(int vendorId);
 

@@ -21,4 +21,5 @@ public class ProductMessages {
     public static String getProductsByPriceSuccess;
     public static String getProductsByStockSuccess;
     public static String getProductsByRatingSuccess;
+    public static String getProductsBySubcategorySuccess;
 }

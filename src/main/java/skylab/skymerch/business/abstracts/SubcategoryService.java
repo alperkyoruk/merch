@@ -15,4 +15,6 @@ public interface SubcategoryService {
     DataResult<List<Subcategory>> getByCategoryId(int categoryId);
     DataResult<List<Subcategory>> getSubcategories();
 
+    DataResult<List<Subcategory>> getSubcategoriesByNameStartsWith(String subcategoryName);
+
 }
