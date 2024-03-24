@@ -193,7 +193,11 @@ public class ProductManager implements ProductService {
 
     @Override
     public DataResult<List<Product>> getProductsByVendor(int vendorId) {
-        var result = productDao.findAllByVendors(vendorId);
+        var vendorResponse = vendorService.getVendorById(vendorId).getData();
+        if(vendorResponse == null){
+            return new ErrorDataResult<>(ProductMessages.VendorCannotBeFound);
+        }
+        var result = productDao.findAllByVendors(vendorResponse);
         if(result == null){
             return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
         }
@@ -223,7 +227,7 @@ public class ProductManager implements ProductService {
 
     @Override
     public DataResult<List<Product>> getProductsBySubcategory(int subcategoryId) {
-        var result = productDao.findAllByCategorySubCategory(subcategoryId);
+        var result = productDao.findAllByCategorySubCategoryId(subcategoryId);
         if(result.isEmpty()){
             return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
 

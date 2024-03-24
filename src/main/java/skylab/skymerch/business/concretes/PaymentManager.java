@@ -1,5 +1,6 @@
 package skylab.skymerch.business.concretes;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.OrderService;
 import skylab.skymerch.business.abstracts.PaymentService;
@@ -16,16 +17,11 @@ import java.util.List;
 @Service
 public class PaymentManager implements PaymentService {
 
+    @Autowired
     private PaymentDao paymentDao;
 
-
+    @Autowired
     private OrderService orderService;
-
-    public PaymentManager(PaymentDao paymentDao, OrderService orderService) {
-        this.paymentDao = paymentDao;
-        this.orderService = orderService;
-    }
-
 
 
 
@@ -36,9 +32,10 @@ public class PaymentManager implements PaymentService {
             return new ErrorResult(PaymentMessages.PaymentCannotBeNull);
         }
 
-        if(payment.getOrder().getTotalPrice() == payment.getAmount())
+        if(payment.getOrder().getTotalPrice() == payment.getAmount()) {
             payment.setStatus("PAID");
-
+            orderService.getById(payment.getOrder().getId()).getData().setStatus("PAID");
+        }
         payment.setTimePaid(new Date());
         paymentDao.save(payment);
         return new SuccessResult(PaymentMessages.PaymentAdded);

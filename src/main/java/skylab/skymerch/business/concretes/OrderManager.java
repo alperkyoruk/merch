@@ -25,18 +25,12 @@ public class OrderManager implements OrderService {
     @Autowired
     private OrderDao orderDao;
 
-    private PaymentService paymentService;
 
+    @Autowired
     private AddressService addressService;
 
-    private ProductService productService;
 
-    public OrderManager(OrderDao orderDao, PaymentService paymentService, AddressService addressService, ProductService productService) {
-        this.orderDao = orderDao;
-        this.paymentService = paymentService;
-        this.addressService = addressService;
-        this.productService = productService;
-    }
+
 
     @Override
     public Result addOrder(Order order) {
@@ -124,24 +118,6 @@ public class OrderManager implements OrderService {
         return new SuccessDataResult<>(result, OrderMessages.getOrdersByStatusSuccess);
     }
 
-    @Override
-    public Result confirmPayment(int orderId) {
-        var result = getById(orderId);
-        if(!result.isSuccess()) {
-            return new ErrorResult(OrderMessages.orderCannotBeFound);
-        }
-
-
-        var order = result.getData();
-        if(paymentService.getByOrderId(order.getId()).getData().getAmount() != order.getTotalPrice()){
-            return new ErrorResult(OrderMessages.paymentAmountNotEqual);
-
-        }
-
-        order.setStatus("PAID");
-        orderDao.save(order);
-        return new SuccessResult(OrderMessages.orderPaymentConfirmed);
-    }
 
 
     private String generateOrderNumber(){
