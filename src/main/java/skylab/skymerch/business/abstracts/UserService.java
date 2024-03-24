@@ -9,7 +9,7 @@ import skylab.skymerch.core.utilities.result.Result;
 import java.util.List;
 
 public interface UserService extends UserDetailsService {
-    Result addUser(User user);
+    Result addUser(RequestUserDto requestUserDto);
 
     Result deleteUser(int userId);
 
@@ -22,6 +22,10 @@ public interface UserService extends UserDetailsService {
     DataResult<List<User>> getUsers();
 
     //DataResult<List<User>> getUsersByRole(String role);
+
+    Result addModerator(int userId);
+
+    Result removeModerator(int userId);
 
 
 }

@@ -17,4 +17,5 @@ public class RequestAddressDto {
         private String zipCode;
         private String country;
         private int userId;
+        private String address;
 }

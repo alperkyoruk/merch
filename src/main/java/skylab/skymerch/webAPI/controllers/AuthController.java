@@ -10,6 +10,7 @@ import skylab.skymerch.core.utilities.result.ErrorDataResult;
 import skylab.skymerch.core.utilities.result.Result;
 import skylab.skymerch.core.utilities.result.SuccessDataResult;
 import skylab.skymerch.core.utilities.result.DataResult;
+import skylab.skymerch.entities.Dtos.RequestUserDto;
 import skylab.skymerch.entities.User;
 
 @RestController
@@ -37,9 +38,21 @@ public class AuthController {
     }
 
     @PostMapping("/registerUser")
-    public Result registerUser(@RequestBody User user){
-        return userService.addUser(user);
+    public Result registerUser(@RequestBody RequestUserDto requestUserDto){
+        return userService.addUser(requestUserDto);
     }
+
+    @PostMapping("/addModerator")
+    public Result addModerator(@RequestParam int userId){
+        return userService.addModerator(userId);
+    }
+
+    @PostMapping("/removeModerator")
+    public Result removeModerator(@RequestParam int userId){
+        return userService.removeModerator(userId);
+    }
+
+
 
 
 }

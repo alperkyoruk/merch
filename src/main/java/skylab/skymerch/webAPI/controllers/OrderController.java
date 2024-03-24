@@ -20,8 +20,8 @@ public class OrderController {
     }
 
     @PostMapping("/addOrder")
-    public Result addOrder(@RequestBody Order order){
-        return orderService.addOrder(order);
+    public Result addOrder(@RequestBody RequestOrderDto requestOrderDto){
+        return orderService.addOrder(requestOrderDto);
     }
 
     @PostMapping("/deleteOrder")

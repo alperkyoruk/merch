@@ -49,7 +49,7 @@ public class ProductController {
         return productService.getProductsBySubcategory(subcategoryId);
     }
 
-    @GetMapping("/getProductsByNameConstains")
+    @GetMapping("/getProductsByNameContains")
     public DataResult<List<Product>> getProductsByNameContains(@RequestParam String productName){
         return productService.getProductsByNameContains(productName);
     }

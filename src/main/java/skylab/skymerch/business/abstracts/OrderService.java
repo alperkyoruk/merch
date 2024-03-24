@@ -8,7 +8,7 @@ import skylab.skymerch.entities.Order;
 import java.util.List;
 
 public interface OrderService {
-    Result addOrder(Order order);
+    Result addOrder(RequestOrderDto requestOrderDto);
 
     Result deleteOrder(int orderId);
 

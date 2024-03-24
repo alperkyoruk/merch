@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import skylab.skymerch.business.abstracts.SubcategoryService;
 import skylab.skymerch.core.utilities.result.DataResult;
 import skylab.skymerch.core.utilities.result.Result;
+import skylab.skymerch.entities.Dtos.RequestSubcategoryDto;
 import skylab.skymerch.entities.Subcategory;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class SubcategoryController {
     }
 
     @PostMapping("/addSubcategory")
-    public Result addSubcategory(@RequestBody Subcategory subcategory){
-        return subcategoryService.addSubcategory(subcategory);
+    public Result addSubcategory(@RequestBody RequestSubcategoryDto requestSubcategoryDto){
+        return subcategoryService.addSubcategory(requestSubcategoryDto);
     }
 
     @PostMapping("/deleteSubcategory")

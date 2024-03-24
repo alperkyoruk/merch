@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import skylab.skymerch.entities.Address;
+import skylab.skymerch.entities.Product;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,8 +21,7 @@ public class RequestOrderDto {
     private int userId;
     private int addressId;
     private int paymentId;
-
-    private Address address;
+    private List<Product> products;
     private String orderNumber;
 
 

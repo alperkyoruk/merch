@@ -54,6 +54,11 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH, targetEntity = Subcategory.class)
+    @JoinColumn(name = "subcategory_id")
+    private Subcategory subcategory;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     private List<Vendor> vendors;
 

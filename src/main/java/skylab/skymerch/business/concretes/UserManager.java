@@ -1,11 +1,11 @@
 package skylab.skymerch.business.concretes;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import skylab.skymerch.business.abstracts.AddressService;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.entities.Dtos.RequestUserDto;
 import skylab.skymerch.entities.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.UserService;
@@ -21,8 +21,11 @@ import java.util.Set;
 @Service
 public class UserManager implements UserService {
 
+
     @Autowired
     private UserDao userDao;
+
+
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -34,30 +37,20 @@ public class UserManager implements UserService {
     }
 
     @Override
-    public Result addUser(User user) {
+    public Result addUser(RequestUserDto requestUserDto) {
 
-        if(user.getUsername().isEmpty() || user.getPassword().isEmpty()){
-            return new ErrorResult(UserMessages.userNameOrPasswordCannotBeNull);
-        }
-
-        if(userDao.existsByUsername(user.getUsername())){
-            return new ErrorResult(UserMessages.usernameAlreadyExists);
-        }
-
-        if(user.getPassword().length() < 8){
-            return new ErrorResult(UserMessages.passwordLengthMustBeGreaterThan8);
-        }
-
-        if(user.getAuthorities()==null){
-            user.setAuthorities(Set.of(Role.ROLE_USER));
-        }
-
-
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User user = User.builder()
+                .firstName(requestUserDto.getFirstName())
+                .lastName(requestUserDto.getLastName())
+                .username(requestUserDto.getUsername())
+                .password(passwordEncoder.encode(requestUserDto.getPassword()))
+                .email(requestUserDto.getEmail())
+                .userType("User")
+                .phone(requestUserDto.getPhone())
+                .authorities(Set.of(Role.ROLE_USER))
+                .build();
 
         userDao.save(user);
-
         return new SuccessResult(UserMessages.userAdded);
     }
 
@@ -137,4 +130,32 @@ public class UserManager implements UserService {
         var user = getUserByUsername(username).getData();
         return user;
     }
+
+    @Override
+    public Result addModerator(int userId) {
+        var result = getUserById(userId);
+        if(!result.isSuccess()){
+            return new ErrorResult(UserMessages.UserNotFound);
+        }
+
+        var user = result.getData();
+        user.addRole(Role.ROLE_MODERATOR);
+        userDao.save(user);
+        return new SuccessResult(UserMessages.userUpdated);
+    }
+
+    @Override
+    public Result removeModerator(int userId) {
+        var result = getUserById(userId);
+        if(!result.isSuccess()){
+            return new ErrorResult(UserMessages.UserNotFound);
+        }
+
+        var user = result.getData();
+        user.getAuthorities().remove(Role.ROLE_MODERATOR);
+        userDao.save(user);
+        return new SuccessResult(UserMessages.userUpdated);
+    }
+
+
 }

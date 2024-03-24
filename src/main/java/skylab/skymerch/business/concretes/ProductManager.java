@@ -2,16 +2,14 @@ package skylab.skymerch.business.concretes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import skylab.skymerch.business.abstracts.CategoryService;
-import skylab.skymerch.business.abstracts.ProductService;
-import skylab.skymerch.business.abstracts.RatingService;
-import skylab.skymerch.business.abstracts.VendorService;
+import skylab.skymerch.business.abstracts.*;
 import skylab.skymerch.business.constants.ProductMessages;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.dataAccess.ProductDao;
 import skylab.skymerch.entities.Dtos.RequestProductDto;
 import skylab.skymerch.entities.Product;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -20,50 +18,47 @@ public class ProductManager implements ProductService {
 
     @Autowired
     private ProductDao productDao;
+
+    @Autowired
     private VendorService vendorService;
+
+    @Autowired
     private CategoryService categoryService;
-    private RatingService ratingService;
 
+    @Autowired
+    private SubcategoryService subcategoryService;
 
-    public ProductManager(ProductDao productDao, VendorService vendorService, CategoryService categoryService, RatingService ratingService) {
-        this.productDao = productDao;
-        this.vendorService = vendorService;
-        this.categoryService = categoryService;
-        this.ratingService = ratingService;
-    }
 
 
     @Override
     public Result addProduct(RequestProductDto requestProductDto) {
         if (requestProductDto.getName() == null ||
                 requestProductDto.getCategoryId() == 0 ||
-                requestProductDto.getVendorId() == 0 ||
                 requestProductDto.getPrice() == 0 ||
                 requestProductDto.getStock() == 0){
             return new ErrorResult(ProductMessages.ProductCannotBeNull);
     }
 
         var vendorsResponse = vendorService.getVendorsByProductId(requestProductDto.getVendorId()).getData();
-        if(vendorsResponse == null){
-            return new ErrorResult(ProductMessages.VendorCannotBeFound);
-        }
-        var categoryResponse = categoryService.getProductCategory(requestProductDto.getId()).getData();
+
+        var categoryResponse = categoryService.findById(requestProductDto.getCategoryId()).getData();
         if(categoryResponse == null){
             return new ErrorResult(ProductMessages.CategoryCannotBeFound);
         }
 
-        var ratingsResponse = ratingService.getRatingsByProductId(requestProductDto.getId()).getData();
-        if(ratingsResponse == null){
-            return new ErrorResult(ProductMessages.RatingCannotBeFound);
-        }
+        var subcateoryResponse = subcategoryService.getById(requestProductDto.getSubcategoryId()).getData();
 
         Product product =  Product.builder()
                 .name(requestProductDto.getName())
+                .description(requestProductDto.getDescription())
                 .category(categoryResponse)
+                .createdAt(new Date())
+                .image(requestProductDto.getImage())
+                .discounted(requestProductDto.isDiscounted())
                 .vendors(vendorsResponse)
+                .subcategory(subcateoryResponse)
                 .price(requestProductDto.getPrice())
                 .stock(requestProductDto.getStock())
-                .ratings(ratingsResponse)
                 .build();
 
         productDao.save(product);
@@ -100,10 +95,6 @@ public class ProductManager implements ProductService {
             return new ErrorResult(ProductMessages.CategoryCannotBeFound);
         }
 
-        var ratingsResponse = ratingService.getRatingsByProductId(requestProductDto.getId()).getData();
-        if(ratingsResponse == null){
-            return new ErrorResult(ProductMessages.RatingCannotBeFound);
-        }
 
 
         var product = Product.builder()
@@ -113,7 +104,6 @@ public class ProductManager implements ProductService {
                 .vendors(vendorsResponse)
                 .price(requestProductDto.getPrice())
                 .stock(requestProductDto.getStock())
-                .ratings(ratingsResponse)
                 .build();
 
         productDao.save(product);

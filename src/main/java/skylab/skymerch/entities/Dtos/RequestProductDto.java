@@ -23,6 +23,7 @@ public class RequestProductDto {
     private boolean discounted;
     private float discountRate;
     private int categoryId;
+    private int subcategoryId;
     private int vendorId;
     private int rating;
 

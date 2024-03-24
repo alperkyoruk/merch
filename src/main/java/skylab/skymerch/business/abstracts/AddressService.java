@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface AddressService {
 
-    Result addAddress(Address address);
+    Result addAddress(RequestAddressDto requestAddressDto);
 
     DataResult<Address> getById(int id);
 

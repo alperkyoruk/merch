@@ -4,14 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.AddressService;
 import skylab.skymerch.business.abstracts.OrderService;
-import skylab.skymerch.business.abstracts.PaymentService;
-import skylab.skymerch.business.abstracts.ProductService;
+import skylab.skymerch.business.abstracts.UserService;
 import skylab.skymerch.business.constants.OrderMessages;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.dataAccess.OrderDao;
-import skylab.skymerch.dataAccess.PaymentDao;
 import skylab.skymerch.entities.Dtos.RequestOrderDto;
 import skylab.skymerch.entities.Order;
+import skylab.skymerch.entities.Product;
 
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -29,17 +28,44 @@ public class OrderManager implements OrderService {
     @Autowired
     private AddressService addressService;
 
+    @Autowired
+    private UserService userService;
+
 
 
 
     @Override
-    public Result addOrder(Order order) {
-        if(order.getUser() == null || order.getProducts() == null || order.getOrderNumber() == null || order.getTotalPrice() == 0)
-            return new ErrorResult(OrderMessages.OrderCannotBeNull);
+    public Result addOrder(RequestOrderDto requestOrderDto) {
 
-        order.setCreatedAt(new Date());
-        order.setOrderNumber(generateOrderNumber());
-        orderDao.save(order);
+        if(requestOrderDto.getAddressId() == 0){
+            return new ErrorResult(OrderMessages.addressCannotBeFound);
+        }
+
+
+        var addressResponse = addressService.getById(requestOrderDto.getAddressId()).getData();
+        var userResponse = userService.getUserById(requestOrderDto.getUserId()).getData();
+
+        if(addressResponse == null){
+            return new ErrorResult(OrderMessages.addressCannotBeFound);
+        }
+
+        if(userResponse == null){
+            return new ErrorResult(OrderMessages.userCannotBeFound);
+        }
+
+        var totalPrice = requestOrderDto.getTotalPrice();
+
+        Order order = Order.builder()
+                .address(addressResponse)
+                .orderNumber(generateOrderNumber())
+                .createdAt(new Date())
+                .status(requestOrderDto.getStatus())
+                .user(userResponse)
+                .totalPrice(calculateTotalPrice(requestOrderDto.getId()))
+                .build();
+
+
+
         return new SuccessResult(OrderMessages.orderAdded);
     }
 
@@ -126,5 +152,19 @@ public class OrderManager implements OrderService {
         random.nextBytes(randomBytes);
         return Base64.getUrlEncoder().encodeToString(randomBytes);
     }
+
+    private float calculateTotalPrice(int orderId) {
+
+        var order = getById(orderId).getData();
+
+        float totalPrice = 0;
+        for( Product product : order.getProducts() ){
+            totalPrice += product.getPrice();
+        }
+
+        return totalPrice;
+    }
+
+
 
 }

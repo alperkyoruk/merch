@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import skylab.skymerch.business.abstracts.RatingService;
 import skylab.skymerch.core.utilities.result.DataResult;
 import skylab.skymerch.core.utilities.result.Result;
+import skylab.skymerch.entities.Dtos.RequestRatingDto;
 import skylab.skymerch.entities.Rating;
 
 import java.util.List;
@@ -19,8 +20,8 @@ public class RatingController {
     }
 
     @PostMapping("/addRating")
-    public Result addRating(@RequestBody Rating rating){
-        return ratingService.addRating(rating);
+    public Result addRating(@RequestBody RequestRatingDto requestRatingDto){
+        return ratingService.addRating(requestRatingDto);
     }
 
     @PostMapping("/deleteRating")

@@ -19,4 +19,5 @@ public class OrderMessages {
     public static String orderPaymentConfirmed = "Order payment confirmed";
     public static String addressCannotBeFound = "Address cannot be found";
     public static String orderPaymentNotConfirmed;
+    public static String userCannotBeFound;
 }

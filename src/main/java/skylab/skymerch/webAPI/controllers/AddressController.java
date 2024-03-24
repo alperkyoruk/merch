@@ -20,8 +20,8 @@ public class AddressController {
     }
 
     @PostMapping("/addAddress")
-    public Result addAddress(@RequestBody Address address){
-        return addressService.addAddress(address);
+    public Result addAddress(@RequestBody RequestAddressDto requestAddressDto){
+        return addressService.addAddress(requestAddressDto);
     }
 
     @PostMapping("/deleteAddress")

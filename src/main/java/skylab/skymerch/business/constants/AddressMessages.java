@@ -7,4 +7,5 @@ public class AddressMessages {
     public static String addressCannotBeFound = "Address cannot be found";
     public static String addressDeleted = "Address deleted";
     public static String addressUpdated = "Address updated";
+    public static String userCannotBeFound;
 }

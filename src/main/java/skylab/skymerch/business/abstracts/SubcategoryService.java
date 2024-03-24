@@ -2,12 +2,13 @@ package skylab.skymerch.business.abstracts;
 
 import skylab.skymerch.core.utilities.result.DataResult;
 import skylab.skymerch.core.utilities.result.Result;
+import skylab.skymerch.entities.Dtos.RequestSubcategoryDto;
 import skylab.skymerch.entities.Subcategory;
 
 import java.util.List;
 
 public interface SubcategoryService {
-    Result addSubcategory(Subcategory subCategory);
+    Result addSubcategory(RequestSubcategoryDto requestSubcategoryDto);
     Result deleteSubcategory(int subCategoryId);
     Result updateSubcategory(Subcategory subCategory);
 

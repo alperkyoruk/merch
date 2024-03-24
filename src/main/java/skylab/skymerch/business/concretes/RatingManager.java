@@ -1,28 +1,57 @@
 package skylab.skymerch.business.concretes;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import skylab.skymerch.business.abstracts.ProductService;
 import skylab.skymerch.business.abstracts.RatingService;
+import skylab.skymerch.business.abstracts.UserService;
+import skylab.skymerch.business.constants.ProductMessages;
 import skylab.skymerch.business.constants.RatingMessages;
+import skylab.skymerch.business.constants.UserMessages;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.dataAccess.RatingDao;
+import skylab.skymerch.entities.Dtos.RequestRatingDto;
 import skylab.skymerch.entities.Rating;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class RatingManager implements RatingService {
 
+    @Autowired
     private RatingDao ratingDao;
 
-    public RatingManager(RatingDao ratingDao) {
-        this.ratingDao = ratingDao;
-    }
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ProductService productService;
+
 
     @Override
-    public Result addRating(Rating rating) {
-        if(rating.getRating() == 0 || rating.getProduct().getId() == 0 || rating.getUser().getId() == 0){
+    public Result addRating(RequestRatingDto requestRatingDto) {
+        if(requestRatingDto.getRating() < 1 || requestRatingDto.getRating() > 5){
             return new ErrorResult(RatingMessages.RatingCannotBeNull);
         }
+
+        var userResponse = userService.getUserById(requestRatingDto.getUserId());
+        if(!userResponse.isSuccess()){
+            return new ErrorResult(UserMessages.UserNotFound);
+        }
+
+        var productResponse = productService.getById(requestRatingDto.getProductId());
+        if(!productResponse.isSuccess()){
+            return new ErrorResult(ProductMessages.ProductCannotBeFound);
+        }
+
+        var rating = Rating.builder()
+                .rating(requestRatingDto.getRating())
+                .submittedAt(new Date())
+                .comment(requestRatingDto.getComment())
+                .product(productResponse.getData())
+                .user(userResponse.getData())
+                .build();
 
         ratingDao.save(rating);
         return new SuccessResult(RatingMessages.RatingAdded);

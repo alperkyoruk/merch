@@ -1,10 +1,12 @@
 package skylab.skymerch.business.concretes;
 
 import org.springframework.stereotype.Service;
+import skylab.skymerch.business.abstracts.CategoryService;
 import skylab.skymerch.business.abstracts.SubcategoryService;
 import skylab.skymerch.business.constants.SubcategoryMessages;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.dataAccess.SubcategoryDao;
+import skylab.skymerch.entities.Dtos.RequestSubcategoryDto;
 import skylab.skymerch.entities.Subcategory;
 
 import java.util.List;
@@ -14,19 +16,27 @@ public class SubcategoryManager implements SubcategoryService {
 
 
     private SubcategoryDao subcategoryDao;
+    private CategoryService categoryService;
 
-    public SubcategoryManager(SubcategoryDao subcategoryDao) {
+    public SubcategoryManager(SubcategoryDao subcategoryDao, CategoryService categoryService) {
         this.subcategoryDao = subcategoryDao;
+        this.categoryService = categoryService;
     }
 
 
     @Override
-    public Result addSubcategory(Subcategory subCategory) {
-        if(subCategory.getName() == null) {
+    public Result addSubcategory(RequestSubcategoryDto requestSubcategoryDto) {
+        if(requestSubcategoryDto.getName() == null) {
             return new ErrorResult(SubcategoryMessages.SubcategoryNameCannotBeNull);
         }
+        var categoryResponse = categoryService.findById(requestSubcategoryDto.getCategoryId()).getData();
 
-        subcategoryDao.save(subCategory);
+        Subcategory subcategory = Subcategory.builder()
+                .name(requestSubcategoryDto.getName())
+                .category(categoryResponse)
+                .build();
+
+        subcategoryDao.save(subcategory);
         return new SuccessResult(SubcategoryMessages.SubcategoryAdded);
     }
 

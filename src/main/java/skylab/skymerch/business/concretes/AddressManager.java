@@ -3,6 +3,7 @@ package skylab.skymerch.business.concretes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.AddressService;
+import skylab.skymerch.business.abstracts.UserService;
 import skylab.skymerch.business.constants.AddressMessages;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.dataAccess.AddressDao;
@@ -17,15 +18,37 @@ public class AddressManager implements AddressService {
     @Autowired
     private AddressDao addressDao;
 
-    public AddressManager(AddressDao addressDao) {
+    @Autowired
+    private UserService userService;
+    public AddressManager(AddressDao addressDao,UserService userService) {
         this.addressDao = addressDao;
+        this.userService = userService;
     }
 
     @Override
-    public Result addAddress(Address address) {
-        if(address.getCity().isEmpty() || address.getCountry().isEmpty() || address.getStreet().isEmpty() || address.getZipCode().isEmpty()){
+    public Result addAddress(RequestAddressDto requestAddressDto) {
+        if(
+                requestAddressDto.getCity().isEmpty() ||
+                requestAddressDto.getCountry().isEmpty() ||
+                requestAddressDto.getStreet().isEmpty() ||
+                requestAddressDto.getZipCode().isEmpty()){
             return new ErrorResult(AddressMessages.AddressCannotBeNull);
         }
+
+       var user = userService.getUserById(requestAddressDto.getUserId());
+        if(!user.isSuccess()){
+            return new ErrorResult(AddressMessages.userCannotBeFound);
+        }
+
+        Address address = Address.builder()
+                .city(requestAddressDto.getCity())
+                .country(requestAddressDto.getCountry())
+                .street(requestAddressDto.getStreet())
+                .zipCode(requestAddressDto.getZipCode())
+                .address(requestAddressDto.getAddress())
+                .user(user.getData())
+                .build();
+
 
         addressDao.save(address);
         return new SuccessResult(AddressMessages.addressAdded);

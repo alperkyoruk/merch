@@ -1,5 +1,6 @@
 package skylab.skymerch.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,7 +34,11 @@ public class Address {
     @Column(name = "country")
     private String country;
 
+    @Column(name = "address")
+    private String address;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 }
