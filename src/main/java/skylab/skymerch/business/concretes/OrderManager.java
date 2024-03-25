@@ -61,10 +61,16 @@ public class OrderManager implements OrderService {
                 .createdAt(new Date())
                 .status(requestOrderDto.getStatus())
                 .user(userResponse)
+                .products(requestOrderDto.getProducts())
                 .totalPrice(calculateTotalPrice(requestOrderDto.getId()))
                 .build();
 
 
+        for (Product product : order.getProducts()) {
+            product.setStock(product.getStock() - 1);
+        }
+
+        orderDao.save(order);
 
         return new SuccessResult(OrderMessages.orderAdded);
     }
