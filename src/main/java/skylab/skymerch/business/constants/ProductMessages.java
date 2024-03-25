@@ -22,4 +22,5 @@ public class ProductMessages {
     public static String getProductsByStockSuccess = "Products found by stock";
     public static String getProductsByRatingSuccess = "Products found by rating";
     public static String getProductsBySubcategorySuccess = "Products found by subcategory";
+    public static String productsCannotBeFound;
 }

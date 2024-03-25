@@ -15,6 +15,8 @@ public interface ProductService {
 
     Result updateProduct(RequestProductDto requestProductDto);
 
+    DataResult<List<Product>> getProductsByIds(List<Integer> productIds);
+
     DataResult<Product> getById(int productId);
 
     DataResult<List<Product>> getProducts();

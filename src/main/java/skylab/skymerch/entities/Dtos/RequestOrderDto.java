@@ -15,13 +15,12 @@ import java.util.List;
 @Builder
 public class RequestOrderDto {
 
-    private int id;
     private float totalPrice;
     private String status;
     private int userId;
     private int addressId;
     private int paymentId;
-    private List<Product> products;
+    private List<Integer> products;
     private String orderNumber;
 
 

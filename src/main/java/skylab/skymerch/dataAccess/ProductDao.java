@@ -21,4 +21,7 @@ public interface ProductDao extends JpaRepository<Product, Integer> {
 
 
     List<Product> findAllByCategorySubCategoryId(int subcategoryId);
+
+    //Find all by list of ids
+    List<Product> findAllByIdIn(List<Integer> ids);
 }

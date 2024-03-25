@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.AddressService;
 import skylab.skymerch.business.abstracts.OrderService;
+import skylab.skymerch.business.abstracts.ProductService;
 import skylab.skymerch.business.abstracts.UserService;
 import skylab.skymerch.business.constants.OrderMessages;
+import skylab.skymerch.business.constants.ProductMessages;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.dataAccess.OrderDao;
 import skylab.skymerch.entities.Dtos.RequestOrderDto;
@@ -13,6 +15,7 @@ import skylab.skymerch.entities.Order;
 import skylab.skymerch.entities.Product;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -31,49 +34,68 @@ public class OrderManager implements OrderService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ProductService productService;
 
 
 
-    @Override
+
     public Result addOrder(RequestOrderDto requestOrderDto) {
-
-        if(requestOrderDto.getAddressId() == 0){
+        // Check if addressId is provided
+        if (requestOrderDto.getAddressId() == 0) {
             return new ErrorResult(OrderMessages.addressCannotBeFound);
         }
 
-
+        // Fetch address and user information
         var addressResponse = addressService.getById(requestOrderDto.getAddressId()).getData();
         var userResponse = userService.getUserById(requestOrderDto.getUserId()).getData();
 
-        if(addressResponse == null){
+        // Check if address and user are found
+        if (addressResponse == null) {
             return new ErrorResult(OrderMessages.addressCannotBeFound);
         }
 
-        if(userResponse == null){
+        if (userResponse == null) {
             return new ErrorResult(OrderMessages.userCannotBeFound);
         }
 
-        var totalPrice = requestOrderDto.getTotalPrice();
+        // Fetch products by their IDs
+        List<Product> productsResponse = productService.getProductsByIds(requestOrderDto.getProducts()).getData();
 
+
+        // Check if products are found
+        if (productsResponse.isEmpty()) {
+            return new ErrorResult(ProductMessages.productsCannotBeFound);
+        }
+
+
+        // Calculate total price
+        float totalPrice = 0;
+
+        // Calculate total price and update stock for products
+        for (Product product : productsResponse) {
+            totalPrice += product.getPrice();
+            product.setStock(product.getStock() - 1);
+        }
+
+
+        // Build the order
         Order order = Order.builder()
                 .address(addressResponse)
                 .orderNumber(generateOrderNumber())
                 .createdAt(new Date())
-                .status(requestOrderDto.getStatus())
+                .status("CREATED")
                 .user(userResponse)
-                .products(requestOrderDto.getProducts())
-                .totalPrice(calculateTotalPrice(requestOrderDto.getId()))
+                .products(productsResponse) // Associate products with the order
+                .totalPrice(totalPrice)
                 .build();
 
-
-        for (Product product : order.getProducts()) {
-            product.setStock(product.getStock() - 1);
-        }
-
+        // Save the order
         orderDao.save(order);
 
         return new SuccessResult(OrderMessages.orderAdded);
     }
+
 
     @Override
     public Result deleteOrder(int orderId) {
@@ -88,7 +110,7 @@ public class OrderManager implements OrderService {
 
     @Override
     public Result updateOrder(RequestOrderDto requestOrderDto) {
-        var result = getById(requestOrderDto.getId());
+        var result = getByOrderNumber(requestOrderDto.getOrderNumber());
         if(!result.isSuccess()) {
             return new ErrorResult(OrderMessages.orderCannotBeFound);
         }
@@ -100,7 +122,6 @@ public class OrderManager implements OrderService {
 
 
         var order = Order.builder()
-                .id(requestOrderDto.getId())
                 .address(addressResponse)
                 .orderNumber(requestOrderDto.getOrderNumber())
                 .status(requestOrderDto.getStatus())
@@ -138,6 +159,16 @@ public class OrderManager implements OrderService {
         }
 
         return new SuccessDataResult<>(result, OrderMessages.getOrdersSuccess);
+    }
+
+    @Override
+    public DataResult<Order> getByOrderNumber(String orderNumber) {
+        var result = orderDao.findByOrderNumber(orderNumber);
+        if(result == null){
+            return new ErrorDataResult<>(OrderMessages.orderCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, OrderMessages.getOrderByOrderNumberSuccess);
     }
 
     @Override

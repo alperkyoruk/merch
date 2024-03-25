@@ -26,6 +26,8 @@ public interface OrderService {
 
     DataResult<List<Order>> getOrdersByStatus(String status);
 
+    DataResult<Order> getByOrderNumber(String orderNumber);
+
 
 
     }

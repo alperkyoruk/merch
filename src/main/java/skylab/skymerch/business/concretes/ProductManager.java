@@ -132,6 +132,15 @@ public class ProductManager implements ProductService {
     }
 
     @Override
+    public DataResult<List<Product>> getProductsByIds(List<Integer> productIds) {
+        var result = productDao.findAllByIdIn(productIds);
+        if(result.isEmpty()){
+            return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
+        }
+        return new SuccessDataResult<>(result, ProductMessages.getProductsSuccess);
+    }
+
+    @Override
     public DataResult<List<Product>> getProductsByName(String productName) {
         var result = productDao.findAllByName(productName);
         if(result == null){

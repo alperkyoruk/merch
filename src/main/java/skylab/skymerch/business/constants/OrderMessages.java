@@ -20,4 +20,5 @@ public class OrderMessages {
     public static String addressCannotBeFound = "Address cannot be found";
     public static String orderPaymentNotConfirmed;
     public static String userCannotBeFound;
+    public static String getOrderByOrderNumberSuccess;
 }

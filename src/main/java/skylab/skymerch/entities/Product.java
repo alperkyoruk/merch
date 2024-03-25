@@ -63,7 +63,7 @@ public class Product {
     private List<Vendor> vendors;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH, targetEntity = Order.class)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     @JoinColumn(name = "order_id")
     private Order order;
 
