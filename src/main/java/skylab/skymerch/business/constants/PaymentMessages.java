@@ -11,4 +11,5 @@ public class PaymentMessages {
     public static String getPaymentsSuccess;
     public static String getPaymentsByStatusSuccess;
     public static String getPaymentsByUserIdSuccess;
+    public static String PaymentAmountIsNotTrue;
 }

@@ -12,9 +12,6 @@ import java.util.Date;
 @Data
 @Builder
 public class RequestPaymentDto {
-    private int id;
-    private String status;
-    private Date timePaid;
     private String type;
     private float amount;
     private int orderId;

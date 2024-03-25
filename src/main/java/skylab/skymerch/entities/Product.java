@@ -49,6 +49,9 @@ public class Product {
     @Column(name = "discount_rate")
     private float discountRate;
 
+    @Column(name = "average_rating")
+    private float averageRating;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH, targetEntity = Category.class)
     @JoinColumn(name = "category_id")
@@ -63,10 +66,11 @@ public class Product {
     private List<Vendor> vendors;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH, targetEntity = Order.class)
     @JoinColumn(name = "order_id")
     private Order order;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
     private List<Rating> ratings;
 

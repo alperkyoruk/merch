@@ -8,7 +8,7 @@ import skylab.skymerch.entities.Payment;
 import java.util.List;
 
 public interface PaymentService {
-    Result addPayment(Payment payment);
+    Result addPayment(RequestPaymentDto requestPaymentDto);
 
     Result deletePayment(int paymentId);
 

@@ -53,6 +53,20 @@ public class RatingManager implements RatingService {
                 .user(userResponse.getData())
                 .build();
 
+
+        List<Rating> ratings = productResponse.getData().getRatings();
+
+
+        float totalRating = 0;
+        for (Rating newRating : ratings) {
+            totalRating += newRating.getRating();
+        }
+
+        float averageRating = totalRating / ratings.size();
+
+
+        productResponse.getData().setAverageRating(averageRating) ;
+
         ratingDao.save(rating);
         return new SuccessResult(RatingMessages.RatingAdded);
     }
@@ -111,6 +125,7 @@ public class RatingManager implements RatingService {
 
     @Override
     public DataResult<Float> getAverageRatingByProductId(int productId) {
+        var product = productService.getById(productId).getData();
         var result = getRatingsByProductId(productId);
 
         if(!result.isSuccess()){
@@ -128,6 +143,8 @@ public class RatingManager implements RatingService {
         }
 
         float averageRating = totalRating / ratings.size();
+
+        product.setAverageRating(averageRating);
 
 
         return new SuccessDataResult<>(averageRating, RatingMessages.getAverageRatingByProductIdSuccess);

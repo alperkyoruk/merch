@@ -32,13 +32,16 @@ public class Payment {
     @Column(name = "amount")
     private float amount;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Column(name = "payment_number")
+    private String paymentNumber;
 
 
 

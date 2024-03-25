@@ -57,6 +57,7 @@ public class ProductManager implements ProductService {
                 .discounted(requestProductDto.isDiscounted())
                 .vendors(vendorsResponse)
                 .subcategory(subcateoryResponse)
+                .averageRating(0)
                 .price(requestProductDto.getPrice())
                 .stock(requestProductDto.getStock())
                 .build();
@@ -244,5 +245,6 @@ public class ProductManager implements ProductService {
 
         return new SuccessDataResult<>(result, ProductMessages.getProductsByNameSuccess);
     }
+
 
 }

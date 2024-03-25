@@ -4,13 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.OrderService;
 import skylab.skymerch.business.abstracts.PaymentService;
+import skylab.skymerch.business.abstracts.UserService;
 import skylab.skymerch.business.constants.PaymentMessages;
 import skylab.skymerch.core.utilities.result.*;
-import skylab.skymerch.dataAccess.OrderDao;
 import skylab.skymerch.dataAccess.PaymentDao;
 import skylab.skymerch.entities.Dtos.RequestPaymentDto;
 import skylab.skymerch.entities.Payment;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -23,20 +25,43 @@ public class PaymentManager implements PaymentService {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    UserService userService;
+
 
 
     @Override
-    public Result addPayment(Payment payment) {
+    public Result addPayment(RequestPaymentDto requestPaymentDto) {
         //add payment
-        if(payment == null) {
+        if(requestPaymentDto == null) {
             return new ErrorResult(PaymentMessages.PaymentCannotBeNull);
         }
 
-        if(payment.getOrder().getTotalPrice() == payment.getAmount()) {
-            payment.setStatus("PAID");
-            orderService.getById(payment.getOrder().getId()).getData().setStatus("PAID");
+        if(requestPaymentDto.getAmount()== 0){
+            return new ErrorResult(PaymentMessages.PaymentCannotBeNull);
         }
-        payment.setTimePaid(new Date());
+
+        var orderResponse = orderService.getById(requestPaymentDto.getOrderId());
+        var userResponse = userService.getUserById(requestPaymentDto.getUserId()).getData();
+
+
+
+        Payment payment = Payment.builder()
+                .user(userResponse)
+                .paymentNumber(generatePaymentNumber())
+                .amount(requestPaymentDto.getAmount())
+                .order(orderResponse.getData())
+                .timePaid(new Date())
+                .build();
+
+                if(orderResponse.getData().getTotalPrice() != requestPaymentDto.getAmount()){
+                    return new ErrorResult(PaymentMessages.PaymentAmountIsNotTrue);
+                }
+
+                orderResponse.getData().setPayment(payment);
+                orderResponse.getData().setStatus("PAID");
+
+
         paymentDao.save(payment);
         return new SuccessResult(PaymentMessages.PaymentAdded);
     }
@@ -58,11 +83,8 @@ public class PaymentManager implements PaymentService {
     public Result updatePayment(RequestPaymentDto requestPaymentDto) {
         var order = orderService.getById(requestPaymentDto.getOrderId()).getData();
         Payment payment = Payment.builder().
-                id(requestPaymentDto.getId()).
                 order(order).
-                timePaid(requestPaymentDto.getTimePaid()).
                 type(requestPaymentDto.getType()).
-                status(requestPaymentDto.getStatus()).
                 build();
 
         paymentDao.save(payment);
@@ -119,4 +141,13 @@ public class PaymentManager implements PaymentService {
 
         return new SuccessDataResult<>(result, PaymentMessages.getPaymentsByUserIdSuccess);
     }
+
+    private String generatePaymentNumber(){
+        SecureRandom random = new SecureRandom();
+        byte[] randomBytes = new byte[32];
+        random.nextBytes(randomBytes);
+        return Base64.getUrlEncoder().encodeToString(randomBytes);
+    }
+
+
 }
