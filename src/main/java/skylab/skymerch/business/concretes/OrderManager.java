@@ -1,5 +1,6 @@
 package skylab.skymerch.business.concretes;
 
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.AddressService;
@@ -26,7 +27,6 @@ public class OrderManager implements OrderService {
 
     @Autowired
     private OrderDao orderDao;
-
 
     @Autowired
     private AddressService addressService;
@@ -63,10 +63,12 @@ public class OrderManager implements OrderService {
         List<Product> productsResponse = productService.getProductsByIds(requestOrderDto.getProducts()).getData();
 
 
+
         // Check if products are found
         if (productsResponse.isEmpty()) {
             return new ErrorResult(ProductMessages.productsCannotBeFound);
         }
+
 
 
         // Calculate total price
@@ -77,6 +79,8 @@ public class OrderManager implements OrderService {
             totalPrice += product.getPrice();
             product.setStock(product.getStock() - 1);
         }
+
+
 
 
         // Build the order

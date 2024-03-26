@@ -51,7 +51,7 @@ public class Order {
     private Payment payment;
 
 
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) // Add @OneToMany annotation
     private List<Product> products;
 
 

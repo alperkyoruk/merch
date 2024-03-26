@@ -66,8 +66,8 @@ public class Product {
     private List<Vendor> vendors;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH, targetEntity = Order.class)
-    @JoinColumn(name = "order_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST) // Update fetch type and cascade
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 
     @JsonIgnore

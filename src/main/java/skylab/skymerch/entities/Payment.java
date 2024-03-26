@@ -1,5 +1,6 @@
 package skylab.skymerch.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +37,8 @@ public class Payment {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

@@ -1,6 +1,7 @@
 package skylab.skymerch.dataAccess;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import skylab.skymerch.entities.Order;
 
 import java.util.Date;
@@ -15,4 +16,6 @@ public interface OrderDao extends JpaRepository<Order, Integer>{
     List<Order> findAllByStatus(String status);
 
     List<Order> findAllByUserId(int userId);
+
+
 }

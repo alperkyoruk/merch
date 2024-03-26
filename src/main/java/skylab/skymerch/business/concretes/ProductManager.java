@@ -1,5 +1,11 @@
 package skylab.skymerch.business.concretes;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.*;
@@ -27,6 +33,9 @@ public class ProductManager implements ProductService {
 
     @Autowired
     private SubcategoryService subcategoryService;
+
+    @Autowired
+    private EntityManager entityManager;
 
 
 
@@ -132,14 +141,16 @@ public class ProductManager implements ProductService {
         return new SuccessDataResult<>(result, ProductMessages.getProductsSuccess);
     }
 
-    @Override
     public DataResult<List<Product>> getProductsByIds(List<Integer> productIds) {
-        var result = productDao.findAllByIdIn(productIds);
+        var result = productDao.findAllByIds(productIds);
+
         if(result.isEmpty()){
             return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
         }
+
         return new SuccessDataResult<>(result, ProductMessages.getProductsSuccess);
     }
+
 
     @Override
     public DataResult<List<Product>> getProductsByName(String productName) {

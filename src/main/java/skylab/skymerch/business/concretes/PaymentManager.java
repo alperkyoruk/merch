@@ -42,6 +42,7 @@ public class PaymentManager implements PaymentService {
         }
 
         var orderResponse = orderService.getById(requestPaymentDto.getOrderId());
+
         var userResponse = userService.getUserById(requestPaymentDto.getUserId()).getData();
 
 

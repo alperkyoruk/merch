@@ -1,6 +1,7 @@
 package skylab.skymerch.dataAccess;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import skylab.skymerch.entities.Product;
 import skylab.skymerch.entities.Vendor;
 
@@ -24,4 +25,8 @@ public interface ProductDao extends JpaRepository<Product, Integer> {
 
     //Find all by list of ids
     List<Product> findAllByIdIn(List<Integer> ids);
+
+    //List of products by All Ids given.
+    @Query("SELECT DISTINCT p FROM Product p WHERE p.id IN :ids")
+    List<Product> findAllByIds(List<Integer> ids);
 }
