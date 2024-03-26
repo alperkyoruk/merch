@@ -51,7 +51,9 @@ public class Order {
     private Payment payment;
 
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) // Add @OneToMany annotation
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "order_products", joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
 
 

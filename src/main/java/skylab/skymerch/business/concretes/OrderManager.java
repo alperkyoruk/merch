@@ -60,7 +60,7 @@ public class OrderManager implements OrderService {
         }
 
         // Fetch products by their IDs
-        List<Product> productsResponse = productService.getProductsByIds(requestOrderDto.getProducts()).getData();
+            List<Product> productsResponse = productService.getProductsByIds(requestOrderDto.getProducts()).getData();
 
 
 

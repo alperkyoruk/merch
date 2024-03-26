@@ -142,7 +142,7 @@ public class ProductManager implements ProductService {
     }
 
     public DataResult<List<Product>> getProductsByIds(List<Integer> productIds) {
-        var result = productDao.findAllByIds(productIds);
+        var result = productDao.findAllByIdIn(productIds);
 
         if(result.isEmpty()){
             return new ErrorDataResult<>(ProductMessages.ProductCannotBeFound);
