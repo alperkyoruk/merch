@@ -26,7 +26,8 @@ public interface ProductDao extends JpaRepository<Product, Integer> {
     //Find all by list of ids
     List<Product> findAllByIdIn(List<Integer> ids);
 
+    List<Product> findAllByOrderByIdAsc();
+
     //List of products by All Ids given.
-    @Query("SELECT DISTINCT p FROM Product p WHERE p.id IN :ids")
-    List<Product> findAllByIds(List<Integer> ids);
+
 }

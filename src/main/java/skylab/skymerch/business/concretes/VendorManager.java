@@ -1,10 +1,16 @@
 package skylab.skymerch.business.concretes;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import skylab.skymerch.business.abstracts.ProductService;
+import skylab.skymerch.business.abstracts.UserService;
 import skylab.skymerch.business.abstracts.VendorService;
+import skylab.skymerch.business.constants.UserMessages;
 import skylab.skymerch.business.constants.VendorMessages;
 import skylab.skymerch.core.utilities.result.*;
 import skylab.skymerch.dataAccess.VendorDao;
+import skylab.skymerch.entities.Dtos.RequestVendorDto;
+import skylab.skymerch.entities.Product;
 import skylab.skymerch.entities.Vendor;
 
 import java.util.List;
@@ -12,20 +18,28 @@ import java.util.List;
 @Service
 public class VendorManager implements VendorService {
 
+
+    @Autowired
     private VendorDao vendorDao;
 
-    public VendorManager(VendorDao vendorDao) {
-        this.vendorDao = vendorDao;
-    }
+    @Autowired
+    private UserService userService;
+
 
     @Override
-    public Result addVendor(Vendor vendor) {
-        if(vendor.getUser().getId() == 0) {
+    public Result addVendor(RequestVendorDto requestVendorDto) {
+        if (requestVendorDto.getUserId() == 0){
             return new ErrorResult(VendorMessages.UserIdCannotBeNull);
         }
-        if(vendor.getVendorName() == null){
-            return new ErrorResult(VendorMessages.VendorNameCannotBeNull);
+        var userResponse = userService.getUserById(requestVendorDto.getUserId());
+        if(!userResponse.isSuccess()){
+            return new ErrorResult(UserMessages.UserNotFound);
         }
+
+        Vendor vendor = Vendor.builder()
+                .user(userResponse.getData())
+                .vendorName(requestVendorDto.getVendorName())
+                .build();
 
         vendorDao.save(vendor);
         return new SuccessResult(VendorMessages.VendorAdded);
@@ -43,13 +57,20 @@ public class VendorManager implements VendorService {
     }
 
     @Override
-    public Result updateVendor(int vendorId) {
-        var result = getVendorById(vendorId);
-        if(!result.isSuccess()) {
+    public Result updateVendor(RequestVendorDto requestVendorDto) {
+        var result = getVendorByUserId((requestVendorDto.getUserId()));
+        if(!result.isSuccess()){
             return new ErrorResult(VendorMessages.VendorCannotBeFound);
         }
         var vendor = result.getData();
-        vendorDao.save(vendor);
+
+
+
+        Vendor updatedVendor = Vendor.builder()
+                .id(vendor.getId())
+                .user(vendor.getUser())
+                .build();
+
         return new SuccessResult(VendorMessages.VendorUpdated);
     }
 
@@ -92,4 +113,16 @@ public class VendorManager implements VendorService {
 
         return new SuccessDataResult<>(result, VendorMessages.getVendorsByProductIdSuccess);
     }
+
+    @Override
+    public DataResult<List<Vendor>> getVendorsByIds(List<Integer> ids) {
+        var result = vendorDao.findAllByIdIn(ids);
+        if(result.isEmpty()){
+            return new ErrorDataResult<List<Vendor>>(VendorMessages.VendorCannotBeFound);
+        }
+
+        return new SuccessDataResult<>(result, VendorMessages.getVendorsByIdsSuccess);
+    }
+
+
 }

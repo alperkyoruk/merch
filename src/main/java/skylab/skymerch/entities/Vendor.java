@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Entity
 @AllArgsConstructor
@@ -22,13 +24,15 @@ public class Vendor {
     @Column(name = "vendor_name")
     private String vendorName;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, targetEntity = Product.class)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "vendor_products", joinColumns = @JoinColumn(name = "vendor_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id"))
+    private List<Product> product;
 
 }

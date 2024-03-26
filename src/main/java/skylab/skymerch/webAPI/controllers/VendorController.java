@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import skylab.skymerch.business.abstracts.VendorService;
 import skylab.skymerch.core.utilities.result.DataResult;
 import skylab.skymerch.core.utilities.result.Result;
+import skylab.skymerch.entities.Dtos.RequestVendorDto;
 import skylab.skymerch.entities.Vendor;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class VendorController {
     }
 
     @PostMapping("/addVendor")
-    public Result addVendor(@RequestBody Vendor vendor){
+    public Result addVendor(@RequestBody RequestVendorDto vendor){
         return vendorService.addVendor(vendor);
     }
 
@@ -29,8 +30,8 @@ public class VendorController {
     }
 
     @PostMapping("/updateVendor")
-    public Result updateVendor(@RequestBody int vendorId){
-        return vendorService.updateVendor(vendorId);
+    public Result updateVendor(@RequestBody RequestVendorDto requestVendorDto){
+        return vendorService.updateVendor(requestVendorDto);
     }
 
     @GetMapping("/getVendorById")

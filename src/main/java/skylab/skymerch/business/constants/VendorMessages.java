@@ -11,4 +11,5 @@ public class VendorMessages {
     public static String VendorBroughtByUserIdSuccess;
     public static String getVendorsSuccess;
     public static String getVendorsByProductIdSuccess;
+    public static String getVendorsByIdsSuccess;
 }

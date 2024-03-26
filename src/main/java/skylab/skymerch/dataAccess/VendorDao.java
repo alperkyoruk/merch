@@ -11,4 +11,6 @@ public interface VendorDao extends JpaRepository<Vendor, Integer>{
     Vendor findByUserId(int userId);
 
     List<Vendor> findAllByProductId(int productId);
+
+    List<Vendor> findAllByIdIn(List<Integer> ids);
 }

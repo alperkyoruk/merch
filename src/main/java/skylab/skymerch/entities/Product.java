@@ -62,7 +62,10 @@ public class Product {
     @JoinColumn(name = "subcategory_id")
     private Subcategory subcategory;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "vendor_products", joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "vendor_id"))
     private List<Vendor> vendors;
 
     @JsonIgnore

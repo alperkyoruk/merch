@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +25,7 @@ public class RequestProductDto {
     private float discountRate;
     private int categoryId;
     private int subcategoryId;
-    private int vendorId;
+    private List<Integer> vendors;
     private int rating;
 
 }

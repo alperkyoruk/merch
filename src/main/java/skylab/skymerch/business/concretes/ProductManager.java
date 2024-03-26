@@ -1,11 +1,5 @@
 package skylab.skymerch.business.concretes;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skylab.skymerch.business.abstracts.*;
@@ -34,10 +28,6 @@ public class ProductManager implements ProductService {
     @Autowired
     private SubcategoryService subcategoryService;
 
-    @Autowired
-    private EntityManager entityManager;
-
-
 
     @Override
     public Result addProduct(RequestProductDto requestProductDto) {
@@ -48,14 +38,14 @@ public class ProductManager implements ProductService {
             return new ErrorResult(ProductMessages.ProductCannotBeNull);
     }
 
-        var vendorsResponse = vendorService.getVendorsByProductId(requestProductDto.getVendorId()).getData();
+        var vendorsResponse = vendorService.getVendorsByIds(requestProductDto.getVendors()).getData();
 
         var categoryResponse = categoryService.findById(requestProductDto.getCategoryId()).getData();
         if(categoryResponse == null){
             return new ErrorResult(ProductMessages.CategoryCannotBeFound);
         }
 
-        var subcateoryResponse = subcategoryService.getById(requestProductDto.getSubcategoryId()).getData();
+        var subcategoryResponse = subcategoryService.getById(requestProductDto.getSubcategoryId()).getData();
 
         Product product =  Product.builder()
                 .name(requestProductDto.getName())
@@ -65,7 +55,7 @@ public class ProductManager implements ProductService {
                 .image(requestProductDto.getImage())
                 .discounted(requestProductDto.isDiscounted())
                 .vendors(vendorsResponse)
-                .subcategory(subcateoryResponse)
+                .subcategory(subcategoryResponse)
                 .averageRating(0)
                 .price(requestProductDto.getPrice())
                 .stock(requestProductDto.getStock())
@@ -95,28 +85,29 @@ public class ProductManager implements ProductService {
             return new ErrorResult(ProductMessages.ProductCannotBeFound);
         }
 
-        var vendorsResponse = vendorService.getVendorsByProductId(requestProductDto.getVendorId()).getData();
-        if(vendorsResponse == null){
-            return new ErrorResult(ProductMessages.VendorCannotBeFound);
-        }
+        var vendorsResponse = vendorService.getVendorsByIds(requestProductDto.getVendors()).getData();
+
 
         var categoryResponse = categoryService.getProductCategory(requestProductDto.getId()).getData();
-        if(categoryResponse == null){
-            return new ErrorResult(ProductMessages.CategoryCannotBeFound);
-        }
 
 
 
-        var product = Product.builder()
-                .id(requestProductDto.getId())
-                .name(requestProductDto.getName())
-                .category(categoryResponse)
-                .vendors(vendorsResponse)
-                .price(requestProductDto.getPrice())
-                .stock(requestProductDto.getStock())
-                .build();
 
-        productDao.save(product);
+                result.setName(requestProductDto.getName() == null ? result.getName() : requestProductDto.getName());
+                result.setDescription(requestProductDto.getDescription().isEmpty() ? result.getDescription() : requestProductDto.getDescription());
+                result.setImage(requestProductDto.getImage() == null ? result.getImage() : requestProductDto.getImage());
+                result.setUpdatedAt(new Date());
+                result.setDiscounted(requestProductDto.isDiscounted());
+                result.setCategory(categoryResponse == null ? result.getCategory() : categoryResponse);
+                result.setVendors(vendorsResponse == null ? result.getVendors() : vendorsResponse);
+                result.setPrice(requestProductDto.getPrice() == 0 ? result.getPrice() : requestProductDto.getPrice());
+                result.setStock(requestProductDto.getStock() == 0 ? result.getStock() : requestProductDto.getStock());
+                result.setDiscountRate(requestProductDto.getDiscountRate() == 0 ? result.getDiscountRate() : requestProductDto.getDiscountRate());
+                result.setCreatedAt(result.getCreatedAt());
+                result.setSubcategory(result.getSubcategory());
+                result.setAverageRating(result.getAverageRating());
+
+        productDao.save(result);
 
         return new SuccessResult(ProductMessages.ProductUpdated);
     }
@@ -134,7 +125,7 @@ public class ProductManager implements ProductService {
 
     @Override
     public DataResult<List<Product>> getProducts() {
-    var result = productDao.findAll();
+    var result = productDao.findAllByOrderByIdAsc();
     if(result.isEmpty()){
         return new ErrorDataResult<>(ProductMessages.getProductsEmpty);
     }
